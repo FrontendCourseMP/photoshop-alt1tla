@@ -22,6 +22,9 @@
 		"vite": "^8.0.7"
 	},
 	"dependencies": {
-		"bits-ui": "^2.17.3"
+		"@tailwindcss/vite": "^4.2.2",
+		"bits-ui": "^2.17.3",
+		"svelte-heros-v2": "^3.0.1",
+		"tailwindcss": "^4.2.2"
 	}
 }
