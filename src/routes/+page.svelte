@@ -1,2 +1,8 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+  import BtnUploadFile from "$lib/components/BtnUploadFile.svelte";
+</script>
+
+<div class="flex flex-col items-center justify-center min-h-screen">
+  <h1 class="text-3xl font-bold text-center text-white mb-4">PHOTOSHOP-ALT1TLA</h1>
+  <BtnUploadFile topage="/editor"/>
+</div>
