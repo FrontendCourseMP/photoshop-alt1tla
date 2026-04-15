@@ -1,30 +1,15 @@
-<!-- <script lang="ts">
-  import logo from "$lib/assets/altlogo.ico";
-  import { imageInfo } from "$lib/stores/imageInfo";
-
-</script>
-
-<div
-  class="bg-gray-900 border-t border-gray-700 px-4 py-2 text-sm text-gray-400"
->
-  <div class="flex justify-between">
-  <div>
-    <span> Изображение: </span>
-    <span class="">{($imageInfo.name != '') ? $imageInfo.name : 'Не выбрано'}</span>
-  </div>
-  </div>
-</div>  -->
 <script lang="ts">
   import { Menubar } from "bits-ui";
+  import { imageInfo } from "$lib/stores/imageInfo";
   import Dog from "phosphor-svelte/lib/Dog";
 </script>
  <div
-  class="bg-gray-900 border-t border-gray-700 px-4 py-2 text-sm text-gray-400"
+  class="bg-gray-900 border-t border-gray-700 px-4 py-2 text-sm text-gray-400 flex justify-between"
 >
 <Menubar.Root class="flex gap-2">
   <Dog class="size-6" />
   <Menubar.Menu>
-    <Menubar.Trigger class="hover:bg-gray-950 px-1 hover:text-gray-50">
+    <Menubar.Trigger class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer">
       Файл
     </Menubar.Trigger>
     <Menubar.Portal>
@@ -34,17 +19,17 @@
         sideOffset={3}
       >
         <Menubar.Item
-          class="hover:bg-gray-950 px-1 hover:text-gray-50"
+          class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
         >
           Импортировать
         </Menubar.Item>
         <Menubar.Item
-          class="hover:bg-gray-950 px-1 hover:text-gray-50"
+          class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
         >
           Экспортировать
         </Menubar.Item>
         <Menubar.Item
-          class="hover:bg-gray-950 px-1 hover:text-gray-50"
+          class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
         >
           Экспортировать как...
         </Menubar.Item>
@@ -52,4 +37,5 @@
     </Menubar.Portal>
   </Menubar.Menu>
 </Menubar.Root>
+    <span class="">{($imageInfo.name != '') ? $imageInfo.name : 'Не выбрано'}</span>
 </div>
