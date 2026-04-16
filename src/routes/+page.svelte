@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from "bits-ui";
-  import { Image } from "phosphor-svelte";
+  import { HandsPrayingIcon } from "phosphor-svelte";
   import { goto } from "$app/navigation";
 </script>
 
@@ -10,7 +10,7 @@
   onclick={() => goto('/editor')}
   class="cursor-pointer bg-gray-800 text-gray-100 hover:bg-gray-700 px-4 py-2 flex items-center gap-2"
 >
-  <Image class="size-6" />
+  <HandsPrayingIcon class="size-6" />
   Перейти к редактору
 </Button.Root>
 </div>

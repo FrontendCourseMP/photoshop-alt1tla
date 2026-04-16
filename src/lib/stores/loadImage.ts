@@ -1,6 +1,9 @@
 import { getDB } from "./db";
 import { imageFile } from "$lib/stores/image";
-// Загружает сохраненное изображение из IndexedDB и устанавливает его в store
+
+/**
+ * Загружает изображение из IndexedDB и сохраняет его в хранилище `imageFile`. Если изображение не найдено, ничего не происходит.
+ */
 export async function loadImage() {
   const db = await getDB();
   if (!db) return;
