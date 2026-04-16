@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Menubar } from "bits-ui";
-  import { imageInfo, uploadFile, exportOriginal } from "$lib/stores/image";
-
+  import { imageInfo, uploadFile } from "$lib/stores/image";
+  import { exportOriginal, exportAs } from "$lib/codecs/utils";
   import PencilRulerIcon from "phosphor-svelte/lib/PencilRulerIcon";
 
   let input: HTMLInputElement;
@@ -53,11 +53,45 @@
           >
             Экспортировать
           </Menubar.Item>
-          <Menubar.Item
-            class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
-          >
-            Экспортировать как...
-          </Menubar.Item>
+          <Menubar.Sub>
+            <Menubar.SubTrigger
+              class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+              >Экспортировать как..</Menubar.SubTrigger
+            >
+            <Menubar.Portal>
+              <Menubar.SubContent
+                class="bg-gray-900 border border-gray-700 px-4 py-2 text-sm text-gray-400"
+              >
+                <Menubar.Item
+                  class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+                  onclick={() => exportAs("png")}
+                >
+                  PNG
+                </Menubar.Item>
+
+                <Menubar.Item
+                  class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+                  onclick={() => exportAs("jpg")}
+                >
+                  JPG
+                </Menubar.Item>
+
+                <Menubar.Item
+                  class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+                  onclick={() => exportAs("jpeg")}
+                >
+                  JPEG
+                </Menubar.Item>
+
+                <Menubar.Item
+                  class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+                  onclick={() => exportAs("gb7")}
+                >
+                  GB7 
+                </Menubar.Item>
+              </Menubar.SubContent>
+            </Menubar.Portal>
+          </Menubar.Sub>
         </Menubar.Content>
       </Menubar.Portal>
     </Menubar.Menu>

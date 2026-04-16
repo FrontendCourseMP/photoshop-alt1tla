@@ -62,22 +62,3 @@ export async function loadImage() {
     await extractImageMeta(file);
   }
 }
-/**
- * Экспортирует оригинальное изображение.
- */
-export async function exportOriginal() {
-  const db = await getDB();
-  if (!db) return;
-
-  const file: File = await db.get("images", "current");
-  if (!file) return;
-
-  const url = URL.createObjectURL(file);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = file.name || "image";
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
