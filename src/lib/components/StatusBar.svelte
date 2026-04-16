@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { imageInfo } from "$lib/stores/imageInfo";
+  import { imageInfo } from "$lib/stores/image";
 </script>
 
 <div
@@ -8,6 +8,6 @@
   <div class="flex justify-between">
     <span>Ширина: {$imageInfo.width} px</span>
     <span>Высота: {$imageInfo.height} px</span>
-    <span>Глубина цвета: {$imageInfo.depth * 8} bpp</span>
+    <span>Глубина цвета: {$imageInfo.depth} bpp</span>
   </div>
 </div>

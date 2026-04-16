@@ -1,9 +1,8 @@
 <script lang="ts">
   import { Menubar } from "bits-ui";
-  import { imageInfo } from "$lib/stores/imageInfo";
-  import { uploadFile } from "$lib/utils/uploadFileFunction";
+  import { imageInfo, uploadFile, exportOriginal } from "$lib/stores/image";
 
-  import Dog from "phosphor-svelte/lib/Dog";
+  import PencilRulerIcon from "phosphor-svelte/lib/PencilRulerIcon";
 
   let input: HTMLInputElement;
 
@@ -12,6 +11,9 @@
   }
   async function handleUploadFile(e: Event) {
     await uploadFile(e);
+  }
+  async function handleExportOriginal() {
+    await exportOriginal();
   }
 </script>
 
@@ -26,7 +28,7 @@
     hidden
   />
   <Menubar.Root class="flex gap-2">
-    <Dog class="size-6" />
+    <PencilRulerIcon class="size-6" />
     <Menubar.Menu>
       <Menubar.Trigger
         class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
@@ -47,6 +49,7 @@
           </Menubar.Item>
           <Menubar.Item
             class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+            onclick={handleExportOriginal}
           >
             Экспортировать
           </Menubar.Item>

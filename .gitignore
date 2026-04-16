@@ -24,3 +24,4 @@ vite.config.ts.timestamp-*
 
 #  Personal
 ideas.md
+src/lib/components/Test.svelte

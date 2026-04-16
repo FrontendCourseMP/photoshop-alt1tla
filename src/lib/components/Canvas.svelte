@@ -1,16 +1,13 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
-  import { imageFile } from "$lib/stores/image";
-  import { imageInfo } from "$lib/stores/imageInfo";
-  import { loadImage } from "$lib/stores/loadImage";
-  
+  import { imageFile, loadImage } from "$lib/stores/image";
+  import { detectFormat } from "$lib/codecs/utils";
+  import { decodeGB7 } from "$lib/codecs/gb7/decoder";
+
+  // Ссылки на элементы и данные
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
-  let img: HTMLImageElement | null = null;
- 
-  let unsubscribe: (() => void) | undefined;
-
-  // Размеры 
+  let image: ImageData | HTMLImageElement | null = null;
+  // Размеры
   let width = 0;
   let height = 0;
   // Смещение для перемещения изображения
@@ -20,92 +17,94 @@
   let isDragging = false;
   let startX = 0;
   let startY = 0;
-
-  onMount(() => {
-    loadImage();
-    ctx = canvas.getContext("2d")!;
-
-    // Адаптивный canvas
-    const observer = new ResizeObserver((entries) => {
+  // Вычисляемый наблюдатель за изменением размера canvas
+  const observer = $derived(
+    new ResizeObserver((entries) => {
       const rect = entries[0].contentRect;
       width = rect.width;
       height = rect.height;
       canvas.width = width;
       canvas.height = height;
-    });
+      render();
+    }),
+  );
+
+  $effect(() => {
+    loadImage();
+    ctx = canvas.getContext("2d")!;
     observer.observe(canvas);
-    // Подписка на store 
-    unsubscribe = imageFile.subscribe((file) => {
+    const unsubscribe = imageFile.subscribe((file) => {
       if (!file) return;
-        loadImageFromFile(file);
-      });
+      loadImageFromFile(file);
+    });
     return () => {
       observer.disconnect();
+      unsubscribe();
     };
   });
-  onDestroy(() => {
-    unsubscribe?.();
-  });
 
-  function loadImageFromFile(file: File) {
-    // Очистка перед новой загрузкой
-    img = null;
+  async function loadImageFromFile(file: File) {
+    const format = await detectFormat(file);
+    image = null;
     ctx.clearRect(0, 0, width, height);
-    const reader = new FileReader();
-    reader.onload = () => {
-      const image = new Image();
-      image.src = reader.result as string;
-      image.onload = () => {
-        img = image;
-        const channels = detectChannels(image);
-        imageInfo.set({
-          name: file.name,
-          width: image.width,
-          height: image.height,
-          depth: channels,
-        });
-        centerImage()
-        render();
-      };
+    if (format === "gb7") {
+      const decoded = await decodeGB7(file);
+      image = new ImageData(decoded.data, decoded.width, decoded.height);
+      centerImage();
+      render();
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      image = img;
+      centerImage();
+      render();
+      URL.revokeObjectURL(url);
     };
-    reader.readAsDataURL(file);
+    img.src = url;
+    return;
   }
-
   function centerImage() {
-    if (!img) return;
-    offsetX = (width - img.width) / 2;
-    offsetY = (height - img.height) / 2;
+    if (!image) return;
+    offsetX = (width - image.width) / 2;
+    offsetY = (height - image.height) / 2;
   }
-
   function render() {
-    if (!ctx || !img) return;
     ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(img, offsetX, offsetY);
+    if (!image) return;
+    if (image instanceof ImageData) {
+      ctx.putImageData(image, offsetX, offsetY);
+    } else {
+      ctx.drawImage(image, offsetX, offsetY);
+    }
   }
 
-  function detectChannels(image: HTMLImageElement) {
-    const temp = document.createElement("canvas");
-    const tctx = temp.getContext("2d")!;
-    temp.width = image.width;
-    temp.height = image.height;
-    tctx.drawImage(image, 0, 0);
-    const imageData = tctx.getImageData(0, 0, image.width, image.height);
-    return imageData.data.length / (image.width * image.height);
-  }
-
+  /**
+   * Обработчик начала перетаскивания изображения
+   * @param e - событие мыши
+   */
   function onMouseDown(e: MouseEvent) {
     isDragging = true;
     startX = e.clientX - offsetX;
     startY = e.clientY - offsetY;
   }
 
+  /**
+   * Обработчик перемещения мыши при перетаскивании изображения
+   * @param e - событие мыши
+   */
   function onMouseMove(e: MouseEvent) {
-    if (!isDragging || !img) return;
+    if (!isDragging || !image) return;
     offsetX = e.clientX - startX;
     offsetY = e.clientY - startY;
     render();
   }
 
+  /**
+   * Обработчик окончания перетаскивания изображения
+   * @param e - событие мыши
+   */
   function onMouseUp() {
     isDragging = false;
   }
@@ -114,7 +113,7 @@
 <div class="w-full h-full">
   <canvas
     bind:this={canvas}
-    class="w-full h-full block cursor-grab active:cursor-grabbing border-4 border-gray-700"
+    class="w-full h-full block cursor-grab active:cursor-grabbing border-4 border-gray-700 bg-gray-800"
     onmousedown={onMouseDown}
     onmousemove={onMouseMove}
     onmouseup={onMouseUp}

@@ -5,7 +5,7 @@
   import ToolBar from "$lib/components/ToolBar.svelte";
 </script>
 
-<div class="h-screen bg-gray-950 flex flex-col">
+<div class="h-screen flex flex-col">
   <Header />
   <div class="flex-1 flex overflow-hidden">
     <ToolBar />
