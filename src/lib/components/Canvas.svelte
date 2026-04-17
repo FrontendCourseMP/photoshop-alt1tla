@@ -7,6 +7,7 @@
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
   let image: ImageData | HTMLImageElement | null = null;
+  let hasMask = false;
   // Размеры
   let width = 0;
   let height = 0;
@@ -46,8 +47,13 @@
   async function loadImageFromFile(file: File) {
     const format = await detectFormat(file);
     image = null;
+    hasMask = false;
     ctx.clearRect(0, 0, width, height);
     if (format === "gb7") {
+      const buffer = await file.arrayBuffer();
+      const view = new DataView(buffer);
+      const flag = view.getUint8(5);
+      hasMask = (flag & 1) === 1;
       const decoded = await decodeGB7(file);
       image = new ImageData(decoded.data, decoded.width, decoded.height);
       centerImage();
@@ -65,11 +71,13 @@
     img.src = url;
     return;
   }
+
   function centerImage() {
     if (!image) return;
     offsetX = (width - image.width) / 2;
     offsetY = (height - image.height) / 2;
   }
+
   function render() {
     ctx.clearRect(0, 0, width, height);
     if (!image) return;
@@ -78,6 +86,22 @@
     } else {
       ctx.drawImage(image, offsetX, offsetY);
     }
+    if (hasMask) {
+      drawBorder();
+    }
+  }
+
+  function drawBorder() {
+    if (!image || !hasMask) return;
+
+    ctx.save();
+
+    ctx.strokeStyle = "#00ffcc";
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(offsetX, offsetY, image.width, image.height);
+
+    ctx.restore();
   }
 
   /**
