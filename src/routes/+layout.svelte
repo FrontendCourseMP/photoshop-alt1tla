@@ -6,6 +6,7 @@
 
 <svelte:head>
   <link rel="icon" href={favicon} />
+  <title>Photoshop ALT1TLA</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-950">
