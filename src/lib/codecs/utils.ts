@@ -138,3 +138,7 @@ function isSameFormat(a: ExportFormat, b: ExportFormat) {
 function changeExtension(name: string, format: ExportFormat) {
   return name.replace(/\.[^.]+$/, `.${format}`);
 }
+
+export function getNameWithoutExtension(name: string): string {
+  return name.replace(/\.[^.]+$/, '');
+}

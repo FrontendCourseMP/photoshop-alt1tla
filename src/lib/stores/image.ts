@@ -62,3 +62,21 @@ export async function loadImage() {
     await extractImageMeta(file);
   }
 }
+
+export async function renameImage(newName: string) {
+  const db = await getDB();
+  if (!db) return;
+  const file: File = await db.get("images", "current");
+  if (!file) return;
+  const ext = file.name.split(".").pop();
+  const finalName = newName.endsWith(`.${ext}`) ? newName : `${newName}.${ext}`;
+  const renamedFile = new File([file], finalName, {
+    type: file.type,
+  });
+  await db.put("images", renamedFile, "current");
+  imageFile.set(renamedFile);
+  imageInfo.update((info) => ({
+    ...info,
+    name: finalName,
+  }));
+}
