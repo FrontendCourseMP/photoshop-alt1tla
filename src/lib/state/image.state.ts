@@ -4,10 +4,14 @@ import type { ImageInfo } from "$lib/core/image/types";
 import { extractGB7Meta } from "$lib/codecs/gb7/utils";
 import { extractStandardMeta } from "$lib/codecs/standard/utils";
 
-// Хранит выбранный файл изображения для редактирования
+/**
+ * Реактивное хранилище файла изображения
+ */
 export const imageFile = writable<File | null>(null);
 
-// Хранит информацию о текущем изображении
+/**
+ * Реактивное хранилище информации об изображении
+ */
 export const imageInfo = writable<ImageInfo>({
   name: "",
   width: 0,
@@ -63,13 +67,20 @@ export async function loadImage() {
   }
 }
 
+/**
+ * Перезаписывает имя файла в indexeddb и обновляет значение в хранилище
+ * @param newName новое имя файла
+ */
 export async function renameImage(newName: string) {
   const db = await getDB();
   if (!db) return;
   const file: File = await db.get("images", "current");
   if (!file) return;
   const ext = file.name.split(".").pop();
-  const finalName = newName.endsWith(`.${ext}`) ? newName : `${newName}.${ext}`;
+  const processName = newName.replace(/\.[^/.]+$/, "");
+  const finalName = processName.endsWith(`.${ext}`)
+    ? processName
+    : `${processName}.${ext}`;
   const renamedFile = new File([file], finalName, {
     type: file.type,
   });
