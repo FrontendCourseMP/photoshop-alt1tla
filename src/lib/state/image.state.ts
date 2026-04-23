@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 import type { ImageInfo } from "$lib/core/types";
-import { extractGB7Meta } from "$lib/core/codec/gb7/utils";
+import { extractGB7Meta } from "$lib/core/codec/gb7/decoder";
 import { extractStandardMeta } from "$lib/core/codec/utils";
 import { detectFormat } from "$lib/core/codec/registry";
 import { saveImage } from "$lib/core/storage/image"

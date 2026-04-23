@@ -1,4 +1,3 @@
-import { imageInfo } from "$lib/state/image.state";
 import type { ImageFormat, ImageInfo } from "$lib/core/types";
 /**
  * Извлекает метаданные из стандартного изображения и сохраняет их в хранилище `imageInfo`.

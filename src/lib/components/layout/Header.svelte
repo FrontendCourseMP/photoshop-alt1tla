@@ -12,11 +12,7 @@
   let input: HTMLInputElement;
   let open = $state(false);
   let newName = $state("");
-
   let isImage = $derived(() => $imageInfo.name !== "");
-
-  let button: HTMLButtonElement;
-
   function openFileDialog() {
     input.click();
   }
