@@ -1,4 +1,4 @@
-import { imageInfo } from "$lib/stores/image";
+import { imageInfo } from "$lib/state/image.state";
 
 const SIGNATURE = [0x47, 0x42, 0x37, 0x1d]; // "GB7" + 0x1d 
 const VERSION = 0x01; // Версия формата GB7

@@ -1,4 +1,4 @@
-import { imageInfo } from "$lib/stores/image";
+import { imageInfo } from "$lib/state/image.state";
 /**
  * Извлекает метаданные из стандартного изображения и сохраняет их в хранилище `imageInfo`.
  * @param file Файл изображения.

@@ -1,4 +1,4 @@
-import { getDB } from "$lib/stores/db";
+import { getDB } from "$lib/core/storage/indexeddb";
 import { decodeGB7 } from "$lib/codecs/gb7/decoder";
 import { encodeGB7 } from "$lib/codecs/gb7/encoder";
 

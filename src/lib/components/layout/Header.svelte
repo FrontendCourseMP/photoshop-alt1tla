@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Menubar, Dialog, Button } from "bits-ui";
-  import { imageInfo, uploadFile, renameImage } from "$lib/stores/image";
+  import { imageInfo, uploadFile, renameImage } from "$lib/state/image.state";
   import {
     exportOriginal,
     exportAs,
     getNameWithoutExtension,
-  } from "$lib/codecs/utils";
+  } from "$lib/core/codecs/registry";
   import PencilRulerIcon from "phosphor-svelte/lib/PencilRulerIcon";
 
   let input: HTMLInputElement;

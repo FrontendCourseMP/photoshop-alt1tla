@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Canvas from "$lib/components/Canvas.svelte";
-  import Header from "$lib/components/Header.svelte";
-  import StatusBar from "$lib/components/StatusBar.svelte";
-  import ToolBar from "$lib/components/ToolBar.svelte";
+  import Canvas from "$lib/components/canvas/Canvas.svelte";
+  import Header from "$lib/components/layout/Header.svelte";
+  import StatusBar from "$lib/components/layout/StatusBar.svelte";
+  import ToolBar from "$lib/components/layout/ToolBar.svelte";
 </script>
 
 <div class="h-screen flex flex-col">

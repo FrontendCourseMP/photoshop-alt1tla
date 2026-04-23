@@ -1,8 +1,8 @@
 import { writable } from "svelte/store";
-import { getDB } from "./db";
-import type { ImageInfo } from "$lib/types/image";
+import { getDB } from "$lib/core/storage/indexeddb";
+import type { ImageInfo } from "$lib/core/image/types";
 import { extractGB7Meta } from "$lib/codecs/gb7/utils";
-import { extractStandardMeta } from "$lib/codecs/others/utils";
+import { extractStandardMeta } from "$lib/codecs/standard/utils";
 
 // Хранит выбранный файл изображения для редактирования
 export const imageFile = writable<File | null>(null);

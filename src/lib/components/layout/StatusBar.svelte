@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { imageInfo } from "$lib/stores/image";
+  import { imageInfo } from "$lib/state/image.state";
 </script>
 
 <div

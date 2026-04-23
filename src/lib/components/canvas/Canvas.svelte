@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { imageFile, loadImage } from "$lib/stores/image";
-  import { detectFormat } from "$lib/codecs/utils";
+  import { imageFile, loadImage } from "$lib/state/image.state";
+  import { detectFormat } from "$lib/core/codecs/registry";
   import { decodeGB7 } from "$lib/codecs/gb7/decoder";
 
   // Ссылки на элементы и данные
