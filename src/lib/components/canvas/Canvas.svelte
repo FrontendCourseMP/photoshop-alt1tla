@@ -1,12 +1,15 @@
 <script lang="ts">
-  import type { ImageInfo } from "$lib/core/types";
+  import { channelState } from "$lib/state/channel.state";
+  import { applyChannels } from "$lib/core/channel";
+  import type { ImageInfo, ChannelView } from "$lib/core/types";
   import { imageInfo } from "$lib/state/image.state";
   import { restoreImageFromStorage } from "$lib/core/storage/image";
-
+  import { toImageData } from "$lib/core/codec/utils";
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
 
   let info: ImageInfo | null = null;
+  let activeChannels: ChannelView[] = [];
 
   let canvasWidth = 0;
   let canvasHeight = 0;
@@ -43,6 +46,11 @@
       render();
     });
 
+    const unsubChannels = channelState.subscribe((v) => {
+      activeChannels = v.active;
+      render();
+    });
+
     return () => {
       observer.disconnect();
       unsub();
@@ -58,13 +66,15 @@
 
   function render() {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
     if (!info?.data) return;
 
-    ctx.putImageData(info.data, offsetX, offsetY);
+    const filtered = applyChannels(info.data, activeChannels);
 
-    if (info.hasMask) {
-      drawBorder();
-    }
+    const img = toImageData(filtered, info.width, info.height);
+    ctx.putImageData(img, offsetX, offsetY);
+
+    if (info.hasMask) drawBorder();
   }
 
   function drawBorder() {

@@ -45,10 +45,28 @@ export async function extractStandardMeta(
 
   return {
     name: file.name,
-    data: imageData,
+    data: new Uint8ClampedArray(imageData.data),
     width,
     height,
     depth,
     hasMask,
+    channels: hasMask
+      ? ["red", "green", "blue", "alpha"]
+      : ["red", "green", "blue"],
   };
+}
+
+/**
+ * Переводит в формат читаемый canvas
+ * @param data
+ * @param width
+ * @param height
+ * @returns
+ */
+export function toImageData(
+  data: Uint8ClampedArray,
+  width: number,
+  height: number,
+): ImageData {
+  return new ImageData(new Uint8ClampedArray(data), width, height);
 }

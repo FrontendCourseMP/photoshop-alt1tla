@@ -8,6 +8,7 @@ const EMPTY = {
   height: 0,
   depth: 0,
   hasMask: false,
+  channels: [],
 };
 
 /**
@@ -35,26 +36,19 @@ export async function extractGB7Meta(file: File): Promise<ImageInfo> {
   const height = view.getUint16(8, false);
   const hasMask = (flag & 0b00000001) === 1;
   const depth = hasMask ? 8 : 7;
-  const pixels = new Uint8ClampedArray(width * height * 4);
-  let offset = 12; // начало пиксельных данных
+  const data = new Uint8ClampedArray(width * height * 4);
+  let offset = 12;
   for (let i = 0; i < width * height; i++) {
     const byte = view.getUint8(offset++);
-    const gray7 = byte & 0b01111111; // 7 бит
+    const gray7 = byte & 0b01111111;
     const mask = (byte & 0b10000000) >> 7;
-    // масштабируем 0–127 → 0–255
     const gray8 = Math.round((gray7 / 127) * 255);
-    // Заполняем RGBA
     const idx = i * 4;
-    pixels[idx] = gray8; // R
-    pixels[idx + 1] = gray8; // G
-    pixels[idx + 2] = gray8; // B
-    if (hasMask) {
-      pixels[idx + 3] = mask ? 255 : 0;
-    } else {
-      pixels[idx + 3] = 255;
-    }
+    data[idx] = gray8;
+    data[idx + 1] = gray8;
+    data[idx + 2] = gray8;
+    data[idx + 3] = hasMask ? (mask ? 255 : 0) : 255;
   }
-  const data = new ImageData(pixels, width, height);
   return {
     name: file.name,
     data: data,
@@ -62,5 +56,6 @@ export async function extractGB7Meta(file: File): Promise<ImageInfo> {
     height: height,
     depth: depth,
     hasMask: hasMask,
+    channels: hasMask ? ["grayscale", "alpha"] : ["grayscale"],
   };
 }

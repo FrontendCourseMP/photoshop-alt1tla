@@ -1,6 +1,7 @@
 import { getDB } from "$lib/core/storage/indexeddb";
 import type { ImageInfo, StoredImage } from "$lib/core/types";
 import { imageInfo, imageFile } from "$lib/state/image.state";
+import { channelState } from "$lib/state/channel.state";
 /**
  * Сохраняет изображение в IndexedDB под ключом "current".
  * @param file фаил изображения
@@ -28,6 +29,9 @@ export async function restoreImageFromStorage() {
   if (!record) return;
   imageFile.set(record.file);
   imageInfo.set(record.meta);
+  channelState.set({
+    active: record.meta.channels,
+  });
 }
 
 /**

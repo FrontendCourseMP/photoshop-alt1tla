@@ -1,4 +1,5 @@
 import { get } from "svelte/store";
+import { toImageData } from "$lib/core/codec/utils";
 import { getDB } from "$lib/core/storage/indexeddb";
 import { imageInfo } from "$lib/state/image.state";
 import { convertToGB7Meta } from "$lib/core/codec/gb7/encoder";
@@ -63,7 +64,8 @@ export async function exportAs(format: ExportFormat) {
 
   if (format === "gb7") {
     if (!info.data) return;
-    const buffer = convertToGB7Meta(info.data, info.hasMask);
+    const img = toImageData(info.data, info.width, info.height);
+    const buffer = convertToGB7Meta(img, info.hasMask);
     const blob = new Blob([buffer], {
       type: "application/octet-stream",
     });
@@ -76,7 +78,8 @@ export async function exportAs(format: ExportFormat) {
   canvas.width = info.width;
   canvas.height = info.height;
   if (info.data) {
-    ctx.putImageData(info.data, 0, 0);
+    const img = toImageData(info.data, info.width, info.height);
+    ctx.putImageData(img, 0, 0);
   }
   const mime = format === "png" ? "image/png" : "image/jpeg";
   canvas.toBlob((blob) => {

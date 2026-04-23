@@ -18,6 +18,7 @@ export const imageInfo = writable<ImageInfo>({
   height: 0,
   depth: 0,
   hasMask: false,
+  channels: [],
 });
 
 /**
