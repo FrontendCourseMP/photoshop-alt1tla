@@ -1,134 +1,102 @@
 <script lang="ts">
-  import { imageFile, loadImage } from "$lib/state/image.state";
-  import { detectFormat } from "$lib/core/codecs/registry";
-  import { decodeGB7 } from "$lib/codecs/gb7/decoder";
+  import type { ImageInfo } from "$lib/core/types";
+  import { imageInfo } from "$lib/state/image.state";
+  import { restoreImageFromStorage } from "$lib/core/storage/image";
 
-  // Ссылки на элементы и данные
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
-  let image: ImageData | HTMLImageElement | null = null;
-  let hasMask = false;
-  // Размеры
-  let width = 0;
-  let height = 0;
-  // Смещение для перемещения изображения
+
+  let info: ImageInfo | null = null;
+
+  let canvasWidth = 0;
+  let canvasHeight = 0;
+
   let offsetX = 0;
   let offsetY = 0;
-  // Флаг для перетаскивания
+
   let isDragging = false;
   let startX = 0;
   let startY = 0;
-  // Вычисляемый наблюдатель за изменением размера canvas
+
   const observer = $derived(
     new ResizeObserver((entries) => {
       const rect = entries[0].contentRect;
-      width = rect.width;
-      height = rect.height;
-      canvas.width = width;
-      canvas.height = height;
+      canvasWidth = rect.width;
+      canvasHeight = rect.height;
+
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
       render();
     }),
   );
 
   $effect(() => {
-    loadImage();
+    restoreImageFromStorage();
+
     ctx = canvas.getContext("2d")!;
     observer.observe(canvas);
-    const unsubscribe = imageFile.subscribe((file) => {
-      if (!file) return;
-      loadImageFromFile(file);
+
+    const unsub = imageInfo.subscribe((v) => {
+      info = v;
+      centerImage();
+      render();
     });
+
     return () => {
       observer.disconnect();
-      unsubscribe();
+      unsub();
     };
   });
 
-  async function loadImageFromFile(file: File) {
-    const format = await detectFormat(file);
-    image = null;
-    hasMask = false;
-    ctx.clearRect(0, 0, width, height);
-    if (format === "gb7") {
-      const buffer = await file.arrayBuffer();
-      const view = new DataView(buffer);
-      const flag = view.getUint8(5);
-      hasMask = (flag & 1) === 1;
-      const decoded = await decodeGB7(file);
-      image = new ImageData(decoded.data, decoded.width, decoded.height);
-      centerImage();
-      render();
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      image = img;
-      centerImage();
-      render();
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
-    return;
-  }
-
   function centerImage() {
-    if (!image) return;
-    offsetX = (width - image.width) / 2;
-    offsetY = (height - image.height) / 2;
+    if (!info) return;
+
+    offsetX = (canvasWidth - info.width) / 2;
+    offsetY = (canvasHeight - info.height) / 2;
   }
 
   function render() {
-    ctx.clearRect(0, 0, width, height);
-    if (!image) return;
-    if (image instanceof ImageData) {
-      ctx.putImageData(image, offsetX, offsetY);
-    } else {
-      ctx.drawImage(image, offsetX, offsetY);
-    }
-    if (hasMask) {
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    if (!info?.data) return;
+
+    ctx.putImageData(info.data, offsetX, offsetY);
+
+    if (info.hasMask) {
       drawBorder();
     }
   }
 
   function drawBorder() {
-    if (!image || !hasMask) return;
+    if (!info) return;
 
     ctx.save();
-
-    ctx.strokeStyle = "#00ffcc";
+    ctx.strokeStyle = "#ff00ff";
     ctx.lineWidth = 2;
 
-    ctx.strokeRect(offsetX, offsetY, image.width, image.height);
+    ctx.strokeRect(offsetX, offsetY, info.width, info.height);
 
     ctx.restore();
   }
 
-  /**
-   * Обработчик начала перетаскивания изображения
-   * @param e - событие мыши
-   */
   function onMouseDown(e: MouseEvent) {
+    if (!info) return;
+
     isDragging = true;
+
     startX = e.clientX - offsetX;
     startY = e.clientY - offsetY;
   }
 
-  /**
-   * Обработчик перемещения мыши при перетаскивании изображения
-   * @param e - событие мыши
-   */
   function onMouseMove(e: MouseEvent) {
-    if (!isDragging || !image) return;
+    if (!isDragging || !info) return;
+
     offsetX = e.clientX - startX;
     offsetY = e.clientY - startY;
+
     render();
   }
 
-  /**
-   * Обработчик окончания перетаскивания изображения
-   * @param e - событие мыши
-   */
   function onMouseUp() {
     isDragging = false;
   }
@@ -137,10 +105,10 @@
 <div class="w-full h-full">
   <canvas
     bind:this={canvas}
-    class="w-full h-full block cursor-grab active:cursor-grabbing border-4 border-gray-700 bg-gray-800"
     onmousedown={onMouseDown}
     onmousemove={onMouseMove}
     onmouseup={onMouseUp}
     onmouseleave={onMouseUp}
+    class="w-full h-full block cursor-grab active:cursor-grabbing border-4 border-gray-700 bg-gray-800"
   ></canvas>
 </div>
