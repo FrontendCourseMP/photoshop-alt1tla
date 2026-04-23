@@ -3,7 +3,8 @@ import type { ImageInfo } from "$lib/core/types";
 import { extractGB7Meta } from "$lib/core/codec/gb7/decoder";
 import { extractStandardMeta } from "$lib/core/codec/utils";
 import { detectFormat } from "$lib/core/codec/registry";
-import { saveImage } from "$lib/core/storage/image"
+import { saveImage } from "$lib/core/storage/image";
+import { channelState } from "./channel.state";
 /**
  * Реактивное хранилище файла изображения
  */
@@ -32,6 +33,7 @@ export async function uploadFile(e: Event) {
   const meta = await extractImageMeta(file);
   imageInfo.set(meta!);
   await saveImage(file, meta!);
+  channelState.set({ active: meta!.channels });
 }
 
 /**
@@ -47,5 +49,3 @@ async function extractImageMeta(file: File) {
     return await extractStandardMeta(file, format);
   }
 }
-
-

@@ -54,6 +54,7 @@
     return () => {
       observer.disconnect();
       unsub();
+      unsubChannels();
     };
   });
 

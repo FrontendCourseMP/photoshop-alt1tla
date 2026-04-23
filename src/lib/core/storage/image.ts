@@ -1,7 +1,7 @@
 import { getDB } from "$lib/core/storage/indexeddb";
 import type { ImageInfo, StoredImage } from "$lib/core/types";
 import { imageInfo, imageFile } from "$lib/state/image.state";
-import { channelState } from "$lib/state/channel.state";
+import { channelState, resetChannelState } from "$lib/state/channel.state";
 /**
  * Сохраняет изображение в IndexedDB под ключом "current".
  * @param file фаил изображения

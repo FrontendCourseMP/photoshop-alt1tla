@@ -1,4 +1,4 @@
-import { writable, derived  } from "svelte/store";
+import { writable, derived } from "svelte/store";
 import { imageInfo } from "$lib/state/image.state";
 import { extractChannelPreview } from "$lib/core/channel";
 import type { ChannelState, ChannelView } from "$lib/core/types";
@@ -49,5 +49,14 @@ export function toggleChannel(channel: ChannelView) {
       ...state,
       active: next,
     };
+  });
+}
+
+/**
+ * Сброс состояния каналов к начальному состоянию.
+ */
+export function resetChannelState() {
+  channelState.set({
+    active: [],
   });
 }
