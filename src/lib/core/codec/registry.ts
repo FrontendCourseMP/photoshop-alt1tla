@@ -1,10 +1,7 @@
 import { getDB } from "$lib/core/storage/indexeddb";
-import { decodeGB7 } from "$lib/codecs/gb7/decoder";
-import { encodeGB7 } from "$lib/codecs/gb7/encoder";
-
-type ExportFormat = "png" | "jpg" | "jpeg" | "gb7";
-type ImageFormat = "png" | "jpeg" | "gb7" | "unknown";
-
+import { decodeGB7 } from "$lib/core/codec/gb7/decoder";
+import { encodeGB7 } from "$lib/core/codec/gb7/encoder";
+import type { ImageFormat, ExportFormat } from "$lib/core/types";
 /**
  * Определяет формат изображения по его заголовку.
  * @param file Файл изображения.
@@ -20,6 +17,25 @@ export async function detectFormat(file: File): Promise<ImageFormat> {
     view.getUint8(3) === 0x1d
   ) {
     return "gb7";
+  }
+  if (
+    view.getUint8(0) === 0x89 &&
+    view.getUint8(1) === 0x50 &&
+    view.getUint8(2) === 0x4e &&
+    view.getUint8(3) === 0x47 &&
+    view.getUint8(4) === 0x0d &&
+    view.getUint8(5) === 0x0a &&
+    view.getUint8(6) === 0x1a &&
+    view.getUint8(7) === 0x0a
+  ) {
+    return "png";
+  }
+  if (
+    view.getUint8(0) === 0xff &&
+    view.getUint8(1) === 0xd8 &&
+    view.getUint8(2) === 0xff
+  ) {
+    return "jpeg";
   }
   return "unknown";
 }
@@ -140,5 +156,5 @@ function changeExtension(name: string, format: ExportFormat) {
 }
 
 export function getNameWithoutExtension(name: string): string {
-  return name.replace(/\.[^.]+$/, '');
+  return name.replace(/\.[^.]+$/, "");
 }

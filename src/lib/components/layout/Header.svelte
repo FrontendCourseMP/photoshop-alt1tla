@@ -1,11 +1,12 @@
 <script lang="ts">
   import { Menubar, Dialog, Button } from "bits-ui";
-  import { imageInfo, uploadFile, renameImage } from "$lib/state/image.state";
+  import { imageInfo, uploadFile } from "$lib/state/image.state";
   import {
     exportOriginal,
     exportAs,
     getNameWithoutExtension,
-  } from "$lib/core/codecs/registry";
+  } from "$lib/core/codec/registry";
+  import { renameFile } from "$lib/core/storage/image";
   import PencilRulerIcon from "phosphor-svelte/lib/PencilRulerIcon";
 
   let input: HTMLInputElement;
@@ -30,7 +31,7 @@
     open = true;
   }
   async function handleRename() {
-    await renameImage(newName);
+    await renameFile(newName);
     open = false;
   }
 </script>
