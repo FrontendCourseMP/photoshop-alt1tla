@@ -1,11 +1,37 @@
 <script lang="ts">
-  import ChannelPanel from "$lib/components/panels/ChannelPanel.svelte";
+  import { Toolbar } from "bits-ui";
+  import { activeTool, setTool } from "$lib/state/tool.state";
+  import { MouseIcon, EyedropperIcon } from "phosphor-svelte";
 </script>
 
-<div
-  class="bg-gray-900 border-t border-gray-700 px-4 py-2 text-sm text-gray-400 min-w-2xs"
+<Toolbar.Root
+  class="flex items-center gap-1 px-2 py-2
+         bg-gray-900
+         border border-gray-700 text-gray-400"
 >
-    <p class="text-2xl">Боковая панель</p>
-    <p class="text-xl">Каналы</p>
-    <ChannelPanel/>
-</div>
+  <Toolbar.Button
+    class="w-10 h-10 flex items-center justify-center
+           hover:bg-gray-800 transition
+           data-[active=true]:bg-gray-700
+           data-[active=true]:text-gray-100
+           data-[active=true]:shadow-inner
+           active:scale-95"
+    data-active={$activeTool === "move"}
+    onclick={() => setTool("move")}
+  >
+    <MouseIcon size={24} />
+  </Toolbar.Button>
+
+  <Toolbar.Button
+    class="w-10 h-10 flex items-center justify-center
+           hover:bg-gray-800 transition
+           data-[active=true]:bg-gray-700
+           data-[active=true]:text-gray-100
+           data-[active=true]:shadow-inner
+           active:scale-95"
+    data-active={$activeTool === "eyedropper"}
+    onclick={() => setTool("eyedropper")}
+  >
+    <EyedropperIcon size={24} />
+  </Toolbar.Button>
+</Toolbar.Root>

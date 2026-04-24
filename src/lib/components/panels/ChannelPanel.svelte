@@ -4,6 +4,14 @@
 
   let canvases: HTMLCanvasElement[] = [];
 
+  let channelName = {
+    red: "Красный (R)",
+    green: "Зеленый (G)",
+    blue: "Синий (B)",
+    alpha: "Маска (A)",
+    grayscale: "Линейный (L)",
+  };
+
   function renderPreviews() {
     const items = $channelPreviews;
     if (!items) return;
@@ -15,7 +23,6 @@
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // ВАЖНО: установить размер canvas
       canvas.width = item.preview.width;
       canvas.height = item.preview.height;
 
@@ -31,17 +38,17 @@
   });
 </script>
 
-<div class="flex flex-row flex-wrap p-2 gap-2 bg-gray-900 border border-gray-700">
+<div class="flex flex-row flex-wrap p-2 gap-2 bg-gray-900">
   {#each $channelPreviews as item, i}
     <button
-      class="flex flex-1 flex-col items-center gap-1 p-2 border 
+      class="flex flex-1 flex-col items-center gap-1 p-2 border
              {item.active ? 'border-green-400 bg-gray-800' : 'border-gray-700'}"
       onclick={() => toggleChannel(item.channel)}
     >
       <canvas bind:this={canvases[i]} class="bg-black"></canvas>
 
       <span class="text-xs text-gray-300">
-        {item.channel}
+        {channelName[item.channel]}
       </span>
     </button>
   {/each}
