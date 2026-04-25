@@ -5,7 +5,7 @@ export function extractChannelPreview(
   width: number,
   height: number,
   channel: ChannelView,
-  maxSize = 128,
+  maxSize = 64,
 ): ImageData {
   const full = new Uint8ClampedArray(width * height * 4);
 
@@ -82,6 +82,7 @@ export function applyChannels(
 
   const hasAlpha = channels.includes("alpha");
   const hasGray = channels.includes("grayscale");
+  const isOnlyAlpha = channels.length === 1 && channels[0] === "alpha";
 
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i];
@@ -93,26 +94,32 @@ export function applyChannels(
       ng = 0,
       nb = 0;
 
-    if (hasRGB) {
-      nr = channels.includes("red") ? r : 0;
-      ng = channels.includes("green") ? g : 0;
-      nb = channels.includes("blue") ? b : 0;
-    }
+    if (isOnlyAlpha) {
+      const value = a;
+      nr = ng = nb = value;
+      out[i + 3] = 255;
+    } else {
+      if (hasRGB) {
+        nr = channels.includes("red") ? r : 0;
+        ng = channels.includes("green") ? g : 0;
+        nb = channels.includes("blue") ? b : 0;
+      }
 
-    if (hasGray && !hasRGB) {
-      const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-      nr = ng = nb = gray;
-    }
+      if (hasGray && !hasRGB) {
+        const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        nr = ng = nb = gray;
+      }
 
-    if (!hasRGB && !hasGray) {
-      nr = ng = nb = 0;
+      if (!hasRGB && !hasGray) {
+        nr = ng = nb = 255;
+      }
+
+      out[i + 3] = hasAlpha ? a : 255;
     }
 
     out[i] = nr;
     out[i + 1] = ng;
     out[i + 2] = nb;
-
-    out[i + 3] = hasAlpha ? a : 255;
   }
 
   return out;

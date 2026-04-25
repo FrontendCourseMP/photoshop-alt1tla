@@ -3,6 +3,7 @@
   import { toggleChannel } from "$lib/state/channel.state";
 
   let canvases: HTMLCanvasElement[] = [];
+  const items = $state(channelPreviews);
 
   let channelName = {
     red: "Красный (R)",
@@ -31,17 +32,16 @@
   }
 
   $effect(() => {
-    const items = $channelPreviews;
     if (!items) return;
 
     renderPreviews();
   });
 </script>
 
-<div class="flex flex-row flex-wrap p-2 gap-2 bg-gray-900">
+<div class="flex flex-col flex-wrap p-2 gap-2 bg-gray-900">
   {#each $channelPreviews as item, i}
     <button
-      class="flex flex-1 flex-col items-center gap-1 p-2 border
+      class="flex flex-1 flex-row items-center gap-1 p-2 border
              {item.active ? 'border-green-400 bg-gray-800' : 'border-gray-700'}"
       onclick={() => toggleChannel(item.channel)}
     >
