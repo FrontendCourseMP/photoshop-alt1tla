@@ -1,38 +1,72 @@
 <script lang="ts">
   import { Popover, Separator } from "bits-ui";
+  import { canvasInfo } from "$lib/state/canvas.state";
   import { pickedColor } from "$lib/state/colorPicker.state";
 
-  let popoverEl: HTMLDivElement | null = null;
+  let popoverEl: HTMLDivElement | null = $state(null);
 
-  let popW = 0;
-  let popH = 0;
+  interface Props {
+    containerWidth: number;
+    containerHeight: number;
+  }
+  let { containerWidth, containerHeight }: Props = $props();
 
-  const observer = $derived(
-    new ResizeObserver((entries) => {
-      const rect = entries[0].contentRect;
-      popW = rect.width;
-      popH = rect.height;
-    }),
-  );
+  let popW = $state(0);
+  let popH = $state(0);
+
+  const observer = new ResizeObserver((entries) => {
+    const rect = entries[0].contentRect;
+    popW = rect.width;
+    popH = rect.height;
+  });
 
   /**
    * Вычисление реактивное позиции для плашки
    */
   let pos = $derived(() => {
-    if (!$pickedColor) return { x: 0, y: 0 };
+    if (!$pickedColor || !$canvasInfo) return { x: -9999, y: -9999 };
 
-    const x = $pickedColor.canvasX;
-    const y = $pickedColor.canvasY;
+    const x = $canvasInfo.canvasX;
+    const y = $canvasInfo.canvasY;
 
-    // flip по вертикали
-    const placeBelow = y < popH + 10;
+    if (popW === 0 || popH === 0) {
+      return { x: -9999, y: -9999 };
+    }
 
     let finalX = x - popW / 2;
-    let finalY = placeBelow ? y + 10 : y - popH - 10;
+    let finalY = y - popH / 2;
 
-    // clamp по X (чтобы не вылезал)
-    finalX = Math.max(4, finalX);
-    finalX = Math.min(finalX, window.innerWidth - popW - 4);
+    if (finalX + popW >= containerWidth) {
+      finalX -= popW; 
+    }
+
+    if (finalX - popW <= 0) {
+      finalX += popW;
+    }
+
+    if (finalX < 0) {
+      finalX = 0;
+    }
+
+    if (finalX + popW > containerWidth) {
+      finalX = containerWidth - popW;
+    }
+
+    if (finalY + popH >= containerHeight) {
+      finalY -= popH; 
+    }
+
+    if (finalY - popH <= 0) {
+      finalY += popH; 
+    }
+
+    if (finalY < 0) {
+      finalY = 0;
+    }
+
+    if (finalY + popH > containerHeight) {
+      finalY = containerHeight - popH;
+    }
 
     return { x: finalX, y: finalY };
   });
@@ -47,7 +81,7 @@
 
 <Popover.Root open={$pickedColor !== null}>
   <Popover.Content
-    ref={popoverEl}
+    bind:ref={popoverEl}
     class="absolute z-50
            bg-gray-900 border border-gray-700 rounded
            px-3 py-2 text-xs text-gray-200 shadow-lg"

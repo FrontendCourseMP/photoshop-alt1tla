@@ -17,6 +17,23 @@
   let info: ImageInfo | null = null;
   let activeChannels: ChannelView[] = [];
 
+  let containerRef: HTMLDivElement;
+  let containerWidth = $state(0);
+  let containerHeight = $state(0);
+  $effect(() => {
+    if (!containerRef) return;
+
+    const ro = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      containerWidth = rect.width;
+      containerHeight = rect.height;
+    });
+
+    ro.observe(containerRef);
+
+    return () => ro.disconnect();
+  });
+
   let canvasWidth = $state(0);
   let canvasHeight = $state(0);
 
@@ -155,7 +172,7 @@
   }
 </script>
 
-<div class="w-full h-full relative">
+<div bind:this={containerRef} class="w-full h-full relative">
   <canvas
     bind:this={canvas}
     onmousedown={onMouseDown}
@@ -166,5 +183,5 @@
     class="w-full h-full block cursor-grab active:cursor-grabbing border-4 border-gray-700 bg-gray-800"
   >
   </canvas>
-  <Popover />
+  <Popover   {containerWidth} {containerHeight} />
 </div>

@@ -27,8 +27,10 @@ export interface PickedColor {
   labL: number;
   labA: number;
   labB: number;
-  hex: string;
+  hex: string; // Тип сделать
+}
+export type Tool = "move" | "eyedropper";
+export interface Canvas {
   canvasX: number;
   canvasY: number;
 }
-export type Tool = "move" | "eyedropper";

@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 import { rgbToLab, rgbToHex } from "$lib/core/tools/colorPicker";
 import type { PickedColor } from "$lib/core/types";
+import { setCanvasInfo } from "$lib/state/canvas.state";
 
 /**
  * Реактивное хранилище для пипетки
@@ -39,10 +40,11 @@ export function pickPixel(
 
   // координаты мыши 
   const x = e.clientX - rect.left - offsetX;
-  const y = e.clientY - rect.top - offsetY;
+  const y = e.clientY - rect.top - offsetY;  
   //  canvas 
   const canvasX = x + offsetX;
   const canvasY = y + offsetY;
+  setCanvasInfo(canvasX,canvasY)
 
   // image 
   const ix = Math.floor(x);
@@ -71,7 +73,5 @@ export function pickPixel(
     labA: lab.A,
     labB: lab.B,
     hex: hex,
-    canvasX: canvasX,
-    canvasY: canvasY,
   });
 }
