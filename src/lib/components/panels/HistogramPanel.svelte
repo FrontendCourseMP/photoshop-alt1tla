@@ -5,6 +5,7 @@
     HistogramData,
     HistogramMode,
     ImageInfo,
+    LevelSettings,
   } from "$lib/core/types";
 
   Chart.register(...registerables);
@@ -20,6 +21,17 @@
 
   let canvas: HTMLCanvasElement;
   let chartInstance: Chart | null = null;
+
+  let levelsByChannel = $state<Record<HistogramMode, LevelSettings>>({
+    master: { black: 0, white: 255, gamma: 1.0 },
+    grayscale: { black: 0, white: 255, gamma: 1.0 },
+    red: { black: 0, white: 255, gamma: 1.0 },
+    green: { black: 0, white: 255, gamma: 1.0 },
+    blue: { black: 0, white: 255, gamma: 1.0 },
+    alpha: { black: 0, white: 255, gamma: 1.0 },
+  });
+
+  let currentLevels: LevelSettings = $derived(levelsByChannel[channel]);
 
   const getChannelConfig = (ch: HistogramMode, data: HistogramData) => {
     switch (ch) {

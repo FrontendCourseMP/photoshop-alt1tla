@@ -34,12 +34,18 @@ export interface Canvas {
   canvasX: number;
   canvasY: number;
 }
-export type HistogramMode = ChannelView | 'master';
+export type HistogramMode = ChannelView | "master";
 export interface HistogramData {
-    red: number[];
-    green: number[];
-    blue: number[];
-    alpha: number[];
-    grayscale: number[]; 
-    master: number[];
+  red: number[];
+  green: number[];
+  blue: number[];
+  alpha: number[];
+  grayscale: number[];
+  master: number[];
 }
+export type LevelSettings = {
+  black: number; // 0–253
+  white: number; // 2–255
+  gamma: number; // 0.1–9.9
+};
+

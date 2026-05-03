@@ -2,9 +2,10 @@
   import { Dialog, Select, Switch } from "bits-ui";
   import { CaretDownIcon } from "phosphor-svelte";
   import { calculateHistogram } from "$lib/core/tools/histogram";
-  import type { HistogramMode, HistogramData } from "$lib/core/types";
-  import HistogramChart from "$lib/components/panels/HistogramPanel.svelte";
+  import type { HistogramMode, HistogramData, LevelSettings } from "$lib/core/types";
   import type { ImageInfo } from "$lib/core/types";
+  import HistogramChart from "$lib/components/panels/HistogramPanel.svelte";
+  import LevelsSlider from "$lib/components/panels/LevelsSlider.svelte";
 
   interface Props {
     open?: boolean;
@@ -12,10 +13,20 @@
     onClose?: () => void;
   }
 
+  let levelsByChannel = $state<Record<HistogramMode, LevelSettings>>({
+    master: { black: 0, white: 255, gamma: 1.0 },
+    grayscale: { black: 0, white: 255, gamma: 1.0 },
+    red: { black: 0, white: 255, gamma: 1.0 },
+    green: { black: 0, white: 255, gamma: 1.0 },
+    blue: { black: 0, white: 255, gamma: 1.0 },
+    alpha: { black: 0, white: 255, gamma: 1.0 },
+  });
+
   let { open = $bindable(false), image, onClose }: Props = $props();
 
   let selectedChannel: HistogramMode = $state("master");
   let isLogarithmic = $state(true);
+  let currentLevels: LevelSettings = $derived(levelsByChannel[selectedChannel]);
   let currentHistogram: HistogramData = $derived(calculateHistogram(image));
 
   const names: Record<HistogramMode, string> = {
@@ -130,9 +141,17 @@
           </div>
         {/if}
       </div>
-      <div class="space-y-4">
-        <!-- Тут будут слайдеры -->
-      </div>
+      {#if image}
+        <LevelsSlider
+          black={currentLevels.black}
+          white={currentLevels.white}
+          gamma={currentLevels.gamma}
+          onChange={(values) => {
+            // Обновляем настройки ТОЛЬКО для текущего канала
+            levelsByChannel[selectedChannel] = { ...values };
+          }}
+        />
+      {/if}
       <div
         class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-2"
       >
