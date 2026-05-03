@@ -2,7 +2,7 @@
   import { Popover, Separator } from "bits-ui";
   import { canvasInfo } from "$lib/state/canvas.state";
   import { pickedColor } from "$lib/state/colorPicker.state";
-
+  import { imageInfo } from "$lib/state/image.state";
   let popoverEl: HTMLDivElement | null = $state(null);
 
   interface Props {
@@ -13,12 +13,7 @@
 
   let popW = $state(0);
   let popH = $state(0);
-
-  const observer = new ResizeObserver((entries) => {
-    const rect = entries[0].contentRect;
-    popW = rect.width;
-    popH = rect.height;
-  });
+  let isImage = $derived(() => $imageInfo.name !== "");
 
   /**
    * Вычисление реактивное позиции для плашки
@@ -37,7 +32,7 @@
     let finalY = y - popH / 2;
 
     if (finalX + popW >= containerWidth) {
-      finalX -= popW; 
+      finalX -= popW;
     }
 
     if (finalX - popW <= 0) {
@@ -53,11 +48,11 @@
     }
 
     if (finalY + popH >= containerHeight) {
-      finalY -= popH; 
+      finalY -= popH;
     }
 
     if (finalY - popH <= 0) {
-      finalY += popH; 
+      finalY += popH;
     }
 
     if (finalY < 0) {
@@ -72,7 +67,12 @@
   });
 
   $effect(() => {
-    if (!popoverEl) return;
+    if (!popoverEl || !isImage) return;
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      popW = rect.width;
+      popH = rect.height;
+    });
     observer.observe(popoverEl);
 
     return () => observer.disconnect();
