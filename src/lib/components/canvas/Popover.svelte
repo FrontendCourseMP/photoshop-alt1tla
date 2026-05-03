@@ -13,7 +13,7 @@
 
   let popW = $state(0);
   let popH = $state(0);
-  let isImage = $derived(() => $imageInfo.name !== "");
+  let isImage = $derived($imageInfo.name !== "");
 
   /**
    * Вычисление реактивное позиции для плашки

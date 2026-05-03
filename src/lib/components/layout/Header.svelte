@@ -8,11 +8,13 @@
   } from "$lib/core/codec/registry";
   import { renameFile } from "$lib/core/storage/image";
   import PencilRulerIcon from "phosphor-svelte/lib/PencilRulerIcon";
+  import LevelsDialog from "$lib/components/dialogs/LevelsDialog.svelte";
 
   let input: HTMLInputElement;
   let open = $state(false);
+  let levelsOpen = $state(false);
   let newName = $state("");
-  let isImage = $derived(() => $imageInfo.name !== "");
+  let isImage = $derived($imageInfo.name !== "");
   function openFileDialog() {
     input.click();
   }
@@ -63,14 +65,18 @@
             Импортировать
           </Menubar.Item>
           <Menubar.Item
-            class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+            class="px-1 cursor-pointer {!isImage
+              ? 'opacity-50 pointer-events-none'
+              : 'hover:bg-gray-950 hover:text-gray-50'}"
             onclick={handleExportOriginal}
           >
             Экспортировать
           </Menubar.Item>
           <Menubar.Sub>
             <Menubar.SubTrigger
-              class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+              class="px-1 cursor-pointer {!isImage
+                ? 'opacity-50 pointer-events-none'
+                : 'hover:bg-gray-950 hover:text-gray-50'}"
               >Экспортировать как..</Menubar.SubTrigger
             >
             <Menubar.Portal>
@@ -110,10 +116,36 @@
         </Menubar.Content>
       </Menubar.Portal>
     </Menubar.Menu>
+    <Menubar.Menu>
+      <Menubar.Trigger
+        class="hover:bg-gray-950 px-1 hover:text-gray-50 cursor-pointer"
+      >
+        Изображение
+      </Menubar.Trigger>
+      <Menubar.Portal>
+        <Menubar.Content
+          class="bg-gray-900 border-r border-l border-b border-gray-700 px-4 py-2 mt-1 text-sm text-gray-400"
+          align="start"
+          sideOffset={4}
+        >
+          <Menubar.Item
+            class="px-1 cursor-pointer {!isImage
+              ? 'opacity-50 pointer-events-none'
+              : 'hover:bg-gray-950 hover:text-gray-50'}"
+            onclick={() => {
+              if (!isImage) return;
+              levelsOpen = true;
+            }}
+          >
+            Уровни
+          </Menubar.Item>
+        </Menubar.Content>
+      </Menubar.Portal>
+    </Menubar.Menu>
   </Menubar.Root>
   <Button.Root
-    class=" {isImage() && 'cursor-pointer hover:text-white'}"
-    onclick={isImage() ? openRename : null}
+    class=" {isImage && 'cursor-pointer hover:text-white'}"
+    onclick={isImage ? openRename : null}
   >
     {$imageInfo.name || "Не выбрано"}
   </Button.Root>
@@ -150,3 +182,4 @@
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>
+<LevelsDialog bind:open={levelsOpen} image={$imageInfo} />

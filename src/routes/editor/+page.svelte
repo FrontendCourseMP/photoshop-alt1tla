@@ -14,7 +14,7 @@
     </div>
     <div class="flex-1 relative overflow-hidden">
       <Canvas />
-      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-50">
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30">
         <ToolBar />
       </div>
     </div>
