@@ -29,8 +29,17 @@ export interface PickedColor {
   labB: number;
   hex: string; // Тип сделать
 }
-export type Tool = "move" | "eyedropper";
+export type Tool = "move" | "eyedropper" | "levels";
 export interface Canvas {
   canvasX: number;
   canvasY: number;
+}
+export type HistogramMode = ChannelView | 'master';
+export interface HistogramData {
+    red: number[];
+    green: number[];
+    blue: number[];
+    alpha: number[];
+    grayscale: number[]; 
+    master: number[];
 }
