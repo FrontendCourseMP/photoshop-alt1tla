@@ -114,7 +114,7 @@
     if (!info) return;
 
     ctx.save();
-    ctx.strokeStyle = "#ff00ff";
+    ctx.strokeStyle = "#05df72";
     ctx.lineWidth = 2;
 
     ctx.strokeRect(offsetX, offsetY, info.width, info.height);
