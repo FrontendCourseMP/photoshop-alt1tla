@@ -55,18 +55,26 @@
   };
 
   const channelOptions = $derived.by(() => {
-    const options: { value: HistogramMode; label: string }[] = [
-      { value: "master", label: names["master"] },
-    ];
-    if (!image || !image.channels) return options;
-
+    if (!image || !image.channels) return [];
+    const isRGB = image.channels.includes("red");
+    const options: { value: HistogramMode; label: string }[] = [];
+    if (isRGB) {
+      options.push({ value: "master", label: names["master"] });
+    }
     image.channels.forEach((ch) => {
-      options.push({
-        value: ch,
-        label: names[ch],
-      });
+      options.push({ value: ch, label: names[ch] });
     });
+    if (image.hasMask && !image.channels.includes("alpha")) {
+      options.push({ value: "alpha", label: names["alpha"] });
+    }
     return options;
+  });
+
+  $effect(() => {
+    if (!image?.channels || channelOptions.length === 0) return;
+    if (!channelOptions.some((opt) => opt.value === selectedChannel)) {
+      selectedChannel = channelOptions[0].value;
+    }
   });
 
   const handleReset = () => {
@@ -96,7 +104,7 @@
       onApply(result.data);
       open = false;
     } catch (err) {
-      console.error("❌ Failed to apply levels:", err);
+      return;
     }
   };
 
@@ -160,11 +168,11 @@
             >
               {#each channelOptions as opt}
                 <Select.Item
-                  label={opt.label}
+                  label={names[opt.value]}
                   value={opt.value}
                   class="cursor-pointer hover:bg-gray-700 focus:bg-gray-700 px-3 py-2"
                 >
-                  {opt.label}
+                  {names[opt.value]}
                 </Select.Item>
               {/each}
             </Select.Content>

@@ -209,11 +209,6 @@
   image={$imageInfo}
   originalData={originalSnapshot}
   onPreview={(data) => {
-  console.log('📦 Header received preview:', {
-    hasData: !!data,
-    length: data?.length,
-    timestamp: Date.now()
-  });
   previewData = data;
 }}
   onApply={handleLevelsApply}

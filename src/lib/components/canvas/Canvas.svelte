@@ -100,11 +100,6 @@
    * Рендер изображени на холсте
    */
   function render() {
-    console.log("🎨 Canvas render:", {
-      hasPreview: !!previewData,
-      previewLength: previewData?.length,
-      infoDataLength: info?.data?.length,
-    });
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     if (!info?.data) return;
     const dataToRender =
