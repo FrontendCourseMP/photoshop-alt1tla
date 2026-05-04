@@ -29,7 +29,7 @@
 
   const handleBWChange = (values: number[]) => {
     const [b, w] = values as [number, number];
-    if (w - b < 2) return; // защита от "схлопывания" диапазона
+    if (w - b < 2) return; 
     onChange({ black: b, white: w, gamma });
   };
 
@@ -43,7 +43,7 @@
   let displayGamma = $derived(gamma);
 </script>
 
-<div class="relative h-12 mt-4 select-none">
+<div class="relative h-12 select-none">
   <Slider.Root
     type="multiple"
     bind:value={bwValues}
@@ -71,7 +71,7 @@
     min={0}
     max={255}
     step={0.1}
-    onValueChange={handleGammaChange}
+    onValueCommit={handleGammaChange}
     class="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none"
   >
     <Slider.Thumb

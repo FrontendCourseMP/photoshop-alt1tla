@@ -1,7 +1,7 @@
 import { getDB } from "$lib/core/storage/indexeddb";
 import type { ImageInfo, StoredImage } from "$lib/core/types";
 import { imageInfo, imageFile } from "$lib/state/image.state";
-import { channelState, resetChannelState } from "$lib/state/channel.state";
+import { channelState } from "$lib/state/channel.state";
 /**
  * Сохраняет изображение в IndexedDB под ключом "current".
  * @param file фаил изображения
@@ -65,4 +65,28 @@ export async function renameFile(newName: string) {
     ...info,
     name: finalName,
   }));
+}
+
+/**
+ * Обновляет только пиксельные данные изображения в IndexedDB
+ * и синхронизирует с store.
+ * @param newData Новые пиксельные данные (Uint8ClampedArray)
+ */
+export async function updateImageData(newData: Uint8ClampedArray) {
+  const db = await getDB();
+  if (!db) return;
+
+  const record = (await db.get("images", "current")) as StoredImage | undefined;
+  if (!record) return;
+
+  const updatedMeta: ImageInfo = {
+    ...record.meta,
+    data: newData, 
+  };
+
+  const updatedRecord: StoredImage = {
+    file: record.file,
+    meta: updatedMeta,
+  };
+  await db.put("images", updatedRecord, "current");
 }

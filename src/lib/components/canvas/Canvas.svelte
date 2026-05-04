@@ -11,6 +11,11 @@
   import { activeTool } from "$lib/state/tool.state";
   import Popover from "$lib/components/canvas/Popover.svelte";
 
+  interface Props {
+    previewData?: Uint8ClampedArray | null;
+  }
+  let { previewData = null }: Props = $props();
+
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
 
@@ -95,15 +100,17 @@
    * Рендер изображени на холсте
    */
   function render() {
+    console.log("🎨 Canvas render:", {
+      hasPreview: !!previewData,
+      previewLength: previewData?.length,
+      infoDataLength: info?.data?.length,
+    });
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
     if (!info?.data) return;
-
-    const filtered = applyChannels(info.data, activeChannels);
-
-    const img = toImageData(filtered, info.width, info.height);
+    const dataToRender =
+      previewData ?? applyChannels(info.data, activeChannels);
+    const img = toImageData(dataToRender, info.width, info.height);
     ctx.putImageData(img, offsetX, offsetY);
-
     if (info.hasMask) drawBorder();
   }
 
@@ -183,5 +190,5 @@
     class="w-full h-full block cursor-grab active:cursor-grabbing border-4 border-gray-700 bg-gray-800"
   >
   </canvas>
-  <Popover   {containerWidth} {containerHeight} />
+  <Popover {containerWidth} {containerHeight} />
 </div>

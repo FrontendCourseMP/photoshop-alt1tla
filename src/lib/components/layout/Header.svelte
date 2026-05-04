@@ -6,15 +6,30 @@
     exportAs,
     getNameWithoutExtension,
   } from "$lib/core/codec/registry";
-  import { renameFile } from "$lib/core/storage/image";
+  import { renameFile, updateImageData } from "$lib/core/storage/image";
   import PencilRulerIcon from "phosphor-svelte/lib/PencilRulerIcon";
   import LevelsDialog from "$lib/components/dialogs/LevelsDialog.svelte";
+
+  interface Props {
+    previewData?: Uint8ClampedArray | null;
+  }
+  let { previewData = $bindable(null) }: Props = $props();
 
   let input: HTMLInputElement;
   let open = $state(false);
   let levelsOpen = $state(false);
   let newName = $state("");
   let isImage = $derived($imageInfo.name !== "");
+  let originalSnapshot = $state<Uint8ClampedArray | null>(null);
+
+  const openLevels = () => {
+    if (!$imageInfo.data) return;
+    originalSnapshot = $imageInfo.data;
+    levelsOpen = true;
+  };
+
+  export { previewData };
+
   function openFileDialog() {
     input.click();
   }
@@ -24,6 +39,11 @@
   async function handleExportOriginal() {
     await exportOriginal();
   }
+  const handleLevelsApply = async (finalData: Uint8ClampedArray) => {
+    $imageInfo = { ...$imageInfo, data: finalData };
+    await updateImageData(finalData);
+    previewData = null;
+  };
   function openRename() {
     newName = getNameWithoutExtension($imageInfo.name);
     open = true;
@@ -32,6 +52,11 @@
     await renameFile(newName);
     open = false;
   }
+  $effect(() => {
+    if (levelsOpen && $imageInfo.data && !originalSnapshot) {
+      originalSnapshot = $imageInfo.data;
+    }
+  });
 </script>
 
 <div
@@ -132,10 +157,7 @@
             class="px-1 cursor-pointer {!isImage
               ? 'opacity-50 pointer-events-none'
               : 'hover:bg-gray-950 hover:text-gray-50'}"
-            onclick={() => {
-              if (!isImage) return;
-              levelsOpen = true;
-            }}
+            onclick={openLevels}
           >
             Уровни
           </Menubar.Item>
@@ -182,4 +204,17 @@
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>
-<LevelsDialog bind:open={levelsOpen} image={$imageInfo} />
+<LevelsDialog
+  bind:open={levelsOpen}
+  image={$imageInfo}
+  originalData={originalSnapshot}
+  onPreview={(data) => {
+  console.log('📦 Header received preview:', {
+    hasData: !!data,
+    length: data?.length,
+    timestamp: Date.now()
+  });
+  previewData = data;
+}}
+  onApply={handleLevelsApply}
+/>

@@ -4,16 +4,18 @@
   import StatusBar from "$lib/components/layout/StatusBar.svelte";
   import SideBar from "$lib/components/layout/SideBar.svelte";
   import ToolBar from "$lib/components/layout/ToolBar.svelte";
+  
+  let previewData = $state<Uint8ClampedArray | null>(null);
 </script>
 
 <div class="h-screen flex flex-col">
-  <Header />
+  <Header bind:previewData />
   <div class="flex-1 flex overflow-hidden relative">
     <div class="w-1/3 max-w-xs bg-gray-900 border-t border-gray-700">
       <SideBar />
     </div>
     <div class="flex-1 relative overflow-hidden">
-      <Canvas />
+      <Canvas {previewData} />
       <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30">
         <ToolBar />
       </div>
