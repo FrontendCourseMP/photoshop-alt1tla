@@ -48,4 +48,8 @@ export type LevelSettings = {
   white: number; // 2–255
   gamma: number; // 0.1–9.9
 };
-
+export type InterpolationFn = (
+  srcData: Uint8ClampedArray,
+  srcW: number, srcH: number,
+  dstW: number, dstH: number
+) => Uint8ClampedArray;
