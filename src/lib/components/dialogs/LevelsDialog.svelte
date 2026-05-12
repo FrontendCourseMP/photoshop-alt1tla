@@ -109,7 +109,11 @@
   };
 
   $effect(() => {
-    if (!originalData || !image || !isPreviewEnabled) return;
+    if (!originalData || !image) return;
+    if (!isPreviewEnabled) {
+      onPreview(null);
+      return;
+    }
     const channel = selectedChannel;
     const { black, white, gamma } = levelsByChannel[channel];
     const key = `${channel}-${black}-${white}-${gamma}`;
